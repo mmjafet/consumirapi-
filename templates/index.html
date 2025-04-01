@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predicción de Tumor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .image-box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .image-box img {
+            max-width: 400px;
+            height: auto;
+        }
+        h3 {
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Predicción de Tumor en Imagen MRI</h1>
+
+        <!-- Formulario para cargar imagen -->
+        <form action="/predict" method="POST" enctype="multipart/form-data">
+            <label for="image">Selecciona una imagen:</label>
+            <input type="file" name="image" id="image" required>
+            <button type="submit">Predecir</button>
+        </form>
+
+        {% if result %}
+            <div class="result">
+                <h2>Resultado: {{ result }}</h2>
+                <p>Probabilidad de tumor: {{ "%.2f"|format(probability*100) }}%</p>
+            </div>
+
+            <div class="image-container">
+                <!-- Imagen original siempre se muestra -->
+                {% if original_image %}
+                    <div class="image-box">
+                        <h3>Imagen Original</h3>
+                        <img src="{{ original_image }}" alt="Imagen Original">
+                    </div>
+                {% endif %}
+
+                <!-- Máscara de segmentación se muestra solo si hay tumor -->
+                {% if mask %}
+                    <div class="image-box">
+                        <h3>Máscara de Segmentación</h3>
+                        <img src="{{ mask }}" alt="Máscara de Segmentación">
+                    </div>
+                {% endif %}
+
+                <!-- Imagen superpuesta se muestra si está disponible -->
+                {% if overlay_image %}
+                    <div class="image-box">
+                        <h3>Tumor Destacado</h3>
+                        <img src="{{ overlay_image }}" alt="Imagen con Tumor Destacado">
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <div class="result">
+                <h3>Error: {{ error }}</h3>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
